@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 pygame.init()
 
+
 def tictactoe_grid():
     background_color = (255, 255, 255)
     axes_color = (0, 0, 0)
@@ -56,7 +57,7 @@ def winner_checker():
             winner = 1
             game_over = True
         if sum(x) == -5:
-            winner = -1
+            winner = 2
             game_over = True
 
     # checking rows
@@ -64,7 +65,7 @@ def winner_checker():
         winner = 1
         game_over = True
     if container[0][y_pos] + container[1][y_pos] + container[2][y_pos] + container[3][y_pos] + container[4][y_pos] == -5:
-        winner = -1
+        winner = 2
         game_over = True
     y_pos += 1
 
@@ -72,19 +73,19 @@ def winner_checker():
         winner = 1
         game_over = True
     if check_diagonal_win(-1):
-        winner = -1
+        winner = 2
         game_over = True
 
 
 def check_diagonal_win(player_id):
-    print("player to: ", player_id)
-    # Sprawdzenie ukosów z lewej górnej do prawej dolnej
+
+    # checking diagonals from upper left do lower right
     for row_ in range(6):
         for col in range(6):
             if sum(container[row_ + i][col + i] == player for i in range(5)) == 5:
                 return True
 
-    # Sprawdzenie ukosów z lewej dolnej do prawej górnej
+    # checking diagonals from lower left do upper right
     for row_ in range(9, 3, -1):
         for col in range(6):
             if sum(container[row_ - i][col + i] == player for i in range(5)) == 5:
@@ -93,14 +94,16 @@ def check_diagonal_win(player_id):
     return False
 
 
-def draw_winner(winner):
-    if winner == 1:
-        text = font.render('Gracz X wygrywa!', True, blue)
-    else:
-        text = font.render('Gracz 0 wygrywa!', True, blue)
+def draw_winner(winner_):
+    win_text = 'Gracz ' + str(winner_) + ' wygrywa!'
+    win_img = font.render(win_text, True, blue)
+    pygame.draw.rect(screen, green, (game_width // 2 - 150, game_height // 2 - 50, 300, 100))
+    screen.blit(win_img, (game_width // 2 - 145, game_height // 2 - 20))
 
-    pygame.draw.rect(screen, green, (game_width // 2 - 500, game_height // 2 - 350, 200, 50))
-    screen.blit(text, (game_width // 2 - 500, game_height // 2 - 250))
+    reset_text = 'Reset'
+    reset_img = font.render(reset_text, True, blue)
+    pygame.draw.rect(screen, green, reset_rect)
+    screen.blit(reset_img, (game_width // 2 - 47, game_height // 2 + 110))
 
 
 # colors
@@ -108,27 +111,28 @@ red = (255, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
 # fonts
-font = pygame.font.Font(None, 10)
+font = pygame.font.Font(None, 50)
 # variables
 game_width = 500
 game_height = 500
 game_status = True
+container = []
 clicked = False
 mouse_pos = []
 player = 1
 winner = 0
 game_over = False
-
+# reset rectangle
+reset_rect = Rect((game_width // 2 - 50, game_height // 2 + 100, 100, 50))
 
 # game screen settings
 screen = pygame.display.set_mode((game_height, game_width))
 pygame.display.set_caption('TicTacToe_10x10 - 5 in a row wins!')
 
-container = []
+# container generator
 for n in range(10):
     row = [0] * 10
     container.append(row)
-print(container)
 
 while game_status:
     tictactoe_grid()
@@ -152,6 +156,22 @@ while game_status:
 
     if game_over is True:
         draw_winner(winner)
+        # check for mouseclick to see if user has clicked on reset button
+        if event.type == pygame.MOUSEBUTTONDOWN and clicked is False:
+            clicked = True
+        elif event.type == pygame.MOUSEBUTTONUP and clicked is True:
+            clicked = False
+            mouse_pos = pygame.mouse.get_pos()
+            if reset_rect.collidepoint(mouse_pos):
+                # reset variables
+                container = []
+                mouse_pos = []
+                player = 1
+                winner = 0
+                game_over = False
+                for n in range(10):
+                    row = [0] * 10
+                    container.append(row)
 
     # updates all the changes in the game
     pygame.display.update()
