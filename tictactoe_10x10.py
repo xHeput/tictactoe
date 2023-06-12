@@ -61,23 +61,26 @@ def winner_checker():
             game_over = True
 
     # checking rows
-    if container[0][y_pos] + container[1][y_pos] + container[2][y_pos] + container[3][y_pos] + container[4][y_pos] == 5:
+    # fix it!!!!!
+    # I know I can do it with the loop, but I got brain damage XD
+    # jak coś jest głupie ale działa to nie jest głupie
+        if container[0][y_pos] + container[1][y_pos] + container[2][y_pos] + container[3][y_pos] + container[4][y_pos] + container[5][y_pos] + container[6][y_pos] + container[7][y_pos] + container[8][y_pos] + container[9][y_pos] == 5:
+            winner = 1
+            game_over = True
+        if container[0][y_pos] + container[1][y_pos] + container[2][y_pos] + container[3][y_pos] + container[4][y_pos] + container[5][y_pos] + container[6][y_pos] + container[7][y_pos] + container[8][y_pos] + container[9][y_pos] == -5:
+            winner = 2
+            game_over = True
+        y_pos += 1
+
+    if check_diagonal_win():
         winner = 1
         game_over = True
-    if container[0][y_pos] + container[1][y_pos] + container[2][y_pos] + container[3][y_pos] + container[4][y_pos] == -5:
-        winner = 2
-        game_over = True
-    y_pos += 1
-
-    if check_diagonal_win(1):
-        winner = 1
-        game_over = True
-    if check_diagonal_win(-1):
+    if check_diagonal_win():
         winner = 2
         game_over = True
 
 
-def check_diagonal_win(player_id):
+def check_diagonal_win():
 
     # checking diagonals from upper left do lower right
     for row_ in range(6):
